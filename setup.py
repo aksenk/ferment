@@ -7,8 +7,8 @@ setup(
     version=__version__,
     name="Ferment",
     description="A tool to provide the current docker config in ferm format",
-    author="Oliver Berger",
-    author_email="diefans@gmail.com",
+    author="Olga Ukhina",
+    author_email="olga.uhina@gmail.com",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -22,12 +22,12 @@ setup(
         "src",
         exclude=[]
     ),
-    namespace_packages=["ferment"],
+    namespace_packages=["ferment-ng"],
     include_package_data=True,
     zip_safe=False,
     entry_points="""\
     [console_scripts]
-    ferment = ferment.scripts:run
+    ferment-ng = ferment-ng.scripts:run
     """,
     install_requires=[
         "docker-py",

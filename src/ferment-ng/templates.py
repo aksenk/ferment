@@ -22,22 +22,34 @@ domain ip {
     }
     table filter {
         chain DOCKER;
-        chain DOCKER-ISOLATION;
+        chain DOCKER-ISOLATION-STAGE-1;
+        chain DOCKER-ISOLATION-STAGE-2;
+        chain DOCKER-USER;
         chain FORWARD {
-            jump DOCKER-ISOLATION;
-
+	    jump DOCKER-USER;
+            jump DOCKER-ISOLATION-STAGE-1;
             outerface @interface {
-                jump DOCKER;
                 mod conntrack ctstate (RELATED ESTABLISHED) ACCEPT;
+		jump DOCKER;
             }
             interface @interface {
                 outerface ! @interface ACCEPT;
                 outerface @interface ACCEPT;
             }
         }
-        chain DOCKER-ISOLATION {
-            jump RETURN;
-        }
+
+	chain DOCKER-ISOLATION-STAGE-1 {
+		interface docker0 outerface ! docker0 jump DOCKER-ISOLATION-STAGE-2;
+	           jump RETURN;
+        	}
+	chain DOCKER-ISOLATION-STAGE-2 {
+	        outerface docker0 DROP;
+	           jump RETURN;	
+	        }
+	chain DOCKER-USER {
+	           jump RETURN;
+	}
+
     }
 
     # container setup
@@ -49,22 +61,17 @@ domain ip {
         # TODO: Loop over each network instad just using the first network!
         ip_address = container['NetworkSettings']['Networks'][first_network]['IPAddress']
         port_bindings = container['HostConfig']['PortBindings']
-
         # group into proto:port:(host:port)
         bindings = {}
         if port_bindings != None:
             for port_proto, binds in port_bindings.iteritems():
                 port, proto = port_proto.split("/")
-
                 if proto not in bindings:
                     bindings[proto] = {}
-
                 if port not in bindings[proto]:
                     bindings[proto][port] = []
-
                 for bind in binds:
                     bindings[proto][port].append((bind['HostIp'], bind['HostPort']))
-
     )
     table nat {
         chain POSTROUTING {
@@ -101,3 +108,4 @@ domain ip {
     @end
 }
 """
+

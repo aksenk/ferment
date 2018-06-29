@@ -8,6 +8,7 @@ Objective
 Create a ferm_ config for the current docker container setup. This seems useful
 for automated provisioning of systems (e.g. with ansible_) which want to use
 ferm_ for their firewall setup.
+It is fork from original project: https://github.com/diefans/ferment with modified template for docker-ce version higher then 18
 
 
 Usage
@@ -15,7 +16,7 @@ Usage
 
 Install Ferment via `pip`::
 
-    # pip install ferment
+    # pip install ferment-ng
 
 
     # ferment docker --help
@@ -74,14 +75,8 @@ You just include a callback to ferment within your `ferm.conf`::
         }
     }
 
-    @include '/usr/local/bin/ferment docker config|';
+    @include '/usr/local/bin/ferment-ng docker config|';
 
-
-Todo
-----
-
-Since I am not the great firewall guy, I suppose there are some issues with
-more complex docker_ setups - I am open for suggestions.
 
 
 .. _ferm: http://ferm.foo-projects.org/
